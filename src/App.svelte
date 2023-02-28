@@ -1,84 +1,43 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-	import Select from 'svelte-select';
-  
-	const dispatch = createEventDispatcher();
-  
-	let options = [
-	  { label: 'Option 1', value: 'option1' },
-	  { label: 'Option 2', value: 'option2' },
-	  { label: 'Option 3', value: 'option3' },
-	  { label: 'Option 4', value: 'option4' },
-	  { label: 'Option 5', value: 'option5' },
-	  { label: 'Option 6', value: 'option6' },
-	  { label: 'Option 7', value: 'option7' },
-	  { label: 'Option 8', value: 'option8' },
-	  { label: 'Option 9', value: 'option9' },
-	];
-  
-	const groupedOptions = [
-	  {
-		label: 'Group 1',
-		options: [
-		  { label: 'Option 1', value: 'option1' },
-		  { label: 'Option 2', value: 'option2' },
-		  { label: 'Option 3', value: 'option3' },
-		],
-	  },
-	  {
-		label: 'Group 2',
-		options: [
-		  { label: 'Option 4', value: 'option4' },
-		  { label: 'Option 5', value: 'option5' },
-		  { label: 'Option 6', value: 'option6' },
-		],
-	  },
-	  {
-		label: 'Group 3',
-		options: [
-		  { label: 'Option 7', value: 'option7' },
-		  { label: 'Option 8', value: 'option8' },
-		  { label: 'Option 9', value: 'option9' },
-		],
-	  },
-	];
-  
-	let selected = [];
-  
-	function handleSelection(selection) {
-	  selected = selection;
-	  dispatch('change', { detail: selected });
-	}
-  </script>
-  
-  <div>
-	<Select
-	  options={options}
-	  labelField="label"
-	  valueField="value"
-	  groupField="group"
-	  groupOptionsBy="label"
-	  multiple
-	  searchable
-	  placeholder="Select options"
-	  selected={selected}
-	  onChange={handleSelection}
-	/>
-  </div>
+  import Header from './components/Header.svelte';
+  import ListOptions from './components/ListOptions.svelte';
+</script>
 
-  <div>
-	<Select
-	  options={groupedOptions}
-	  labelField="label"
-	  valueField="value"
-	  groupField="group"
-	  groupOptionsBy="options"
-	  multiple
-	  searchable
-	  placeholder="Select options"
-	  selected={selected}
-	  onChange={handleSelection}
-	/>
+<main>
+  <div class="container">
+    <Header />
+    <ListOptions />
   </div>
+</main>
 
-  
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    text-decoration: none;
+    list-style: none;
+    box-sizing: border-box;
+  }
+
+  :root {
+    /* COLOR ROOT */
+    --color-white: #ffffff;
+  }
+
+  main {
+    font-family: Helvetica, sans-serif;
+    line-height: 1.7;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    background-color: #64748b;
+  }
+
+  .container {
+    padding: 20px;
+  }
+</style>
