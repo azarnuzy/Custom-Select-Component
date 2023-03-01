@@ -1,48 +1,54 @@
 <script>
-  const options = [
+  import { each } from 'svelte/internal';
+
+  let options = [
     {
       category: 'Beef',
       foods: [
-        { id: '1A', value: 'Beef and Mustard Pie' },
-        { id: '2A', value: 'Beef and Oyster Pie' },
-        { id: '3A', value: 'Beef Bourguignon' },
-        { id: '4A', value: 'Beef Brisket Pot Roast' },
+        { id: '1A', value: 'Beef and Mustard Pie', isSelected: false },
+        { id: '2A', value: 'Beef and Oyster Pie', isSelected: false },
+        { id: '3A', value: 'Beef Bourguignon', isSelected: false },
+        { id: '4A', value: 'Beef Brisket Pot Roast', isSelected: false },
       ],
     },
     {
       category: 'Chicken',
       foods: [
-        { id: '1B', value: 'Ayam Percik' },
-        { id: '2B', value: 'Brown Stew Chicken' },
-        { id: '3B', value: 'Chick-Fil-A Sandwich' },
-        { id: '4B', value: 'Chicken & Mushroom Hotpot' },
-        { id: '5B', value: 'Chicken Alfredo Primavera' },
+        { id: '1B', value: 'Ayam Percik', isSelected: false },
+        { id: '2B', value: 'Brown Stew Chicken', isSelected: false },
+        { id: '3B', value: 'Chick-Fil-A Sandwich', isSelected: false },
+        { id: '4B', value: 'Chicken & Mushroom Hotpot', isSelected: false },
+        { id: '5B', value: 'Chicken Alfredo Primavera', isSelected: false },
       ],
     },
     {
       category: 'Dessert',
       foods: [
-        { id: '1C', value: 'Apam Balik' },
-        { id: '2C', value: 'Apple & Blackberry Crumble' },
-        { id: '3C', value: 'Apple Frangipan Tart' },
-        { id: '4C', value: 'Bakewell Tart' },
-        { id: '5C', value: 'Banana Pancakes' },
+        { id: '1C', value: 'Apam Balik', isSelected: false },
+        { id: '2C', value: 'Apple & Blackberry Crumble', isSelected: false },
+        { id: '3C', value: 'Apple Frangipan Tart', isSelected: false },
+        { id: '4C', value: 'Bakewell Tart', isSelected: false },
+        { id: '5C', value: 'Banana Pancakes', isSelected: false },
       ],
     },
     {
       category: 'Seafood',
       foods: [
-        { id: '1D', value: 'Baked Salmon with Fennel & Tomatoes' },
-        { id: '2D', value: 'Cajun Spiced Fish Tacos' },
-        { id: '3D', value: 'Escovitch Fish' },
-        { id: '4D', value: 'Fish Fofos' },
+        {
+          id: '1D',
+          value: 'Baked Salmon with Fennel & Tomatoes',
+          isSelected: false,
+        },
+        { id: '2D', value: 'Cajun Spiced Fish Tacos', isSelected: false },
+        { id: '3D', value: 'Escovitch Fish', isSelected: false },
+        { id: '4D', value: 'Fish Fofos', isSelected: false },
       ],
     },
   ];
 
-  let query = 'beefa';
-
-  let filteredOptions = [];
+  let query = '';
+  let filteredOptions = options;
+  let selected = [];
 
   let isFocus = false;
 
@@ -55,11 +61,10 @@
   const handleChange = (e) => {
     query = e.target.value;
     const tempFilteredOptions = options.reduce((acc, option) => {
-      // check if the category matches the search input
       if (option.category.toLowerCase().includes(query.toLowerCase())) {
         return [...acc, option];
       }
-      // check if any of the food values match the search input
+
       const filteredFoods = option.foods.filter((food) =>
         food.value.toLowerCase().includes(query.toLowerCase())
       );
@@ -71,41 +76,115 @@
 
     filteredOptions = [...tempFilteredOptions];
   };
+
+  const handleClick = (props) => {
+    options.forEach((option) =>
+      option.foods.forEach((food) => {
+        if (food.id === props.id) {
+          food.isSelected = !props.isSelected;
+        }
+      })
+    );
+
+    filteredOptions = [...options];
+    const selectedOptions = options.reduce((acc, curr) => {
+      const selectedFoods = curr.foods.filter((food) => food.isSelected);
+      if (selectedFoods.length > 0) {
+        acc.push({
+          category: curr.category,
+          foods: selectedFoods,
+        });
+      }
+      return acc;
+    }, []);
+
+    selected = [...selectedOptions];
+  };
 </script>
 
 <div class="container">
-  <ul class="selected-options">
-    <li>Beef and Mustard Pie</li>
-    <li>Beef and Oyster Pie</li>
-    <li>Ayam Percik</li>
-    <li>Brown Stew Chicken</li>
-    <li>Chicken & Mushroom Hotpot</li>
-  </ul>
+  <div class="wrapper-selected">
+    <ul class="selected-options">
+      {#each selected as food (food.category)}
+        {#each food.foods as select}
+          <li>{select.value}</li>
+        {/each}
+      {/each}
+    </ul>
+  </div>
   <div class="list">
     <div class="list-input">
       <input
         on:focus={handleFocus}
-        on:blur={handleBlur}
         on:input={(e) => handleChange(e)}
         value={query}
         type="text"
-        placeholder="Search Your Favorite Books"
+        placeholder="Search Your Favorite Foods"
       />
+      <button
+        class={isFocus ? ' show x-icon' : ' hidden'}
+        on:click={handleBlur}
+      >
+        <svg
+          width="31"
+          height="17"
+          viewBox="0 0 31 17"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M11.625 4.95837L14.2083 8.50004L11.625 12.0417H14.2083L15.5 10.2709L16.7917 12.0417H19.375L16.7917 8.50004L19.375 4.95837H16.7917L15.5 6.72921L14.2083 4.95837H11.625Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
     </div>
     <div class="list-options {isFocus ? ' show' : ' hidden'}">
       {#each filteredOptions as option (option.category)}
         <h3>{option.category}</h3>
         <ul>
           {#each option.foods as food (food.id)}
-            <li>{food.value}</li>
+            <li
+              class="{food.isSelected === true ? ' active-list' : ''} list-food"
+            >
+              <button on:click={() => handleClick(food)}>
+                {food.value}
+                <span
+                  class="{food.isSelected ? ' show' : ' hidden'} icon-checklist"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 16.4L6 12.4L7.4 11L10 13.6L16.6 7L18 8.4L10 16.4Z"
+                      fill="#F8F8F8"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </li>
           {/each}
         </ul>
+      {:else}
+        <h3>There is no result '{query}'</h3>
       {/each}
     </div>
   </div>
 </div>
 
 <style>
+  button {
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+    border: transparent;
+    cursor: pointer;
+  }
+
   .container {
     display: flex;
     width: 720px;
@@ -114,13 +193,18 @@
     align-items: center;
   }
 
+  .wrapper-selected {
+    height: 50px;
+    width: 83%;
+  }
+
   .selected-options {
     display: flex;
     gap: 12px;
     overflow-x: scroll;
     list-style: none;
     padding: 0;
-    max-width: 83%;
+    max-width: 100%;
   }
 
   .selected-options li {
@@ -149,6 +233,10 @@
 
   .hidden {
     display: none;
+  }
+
+  .x-icon {
+    cursor: pointer;
   }
 
   ::-webkit-scrollbar-track {
@@ -214,15 +302,37 @@
 
   .list-options ul li {
     margin: 0;
-    padding: 5px 20px;
     display: flex;
     align-items: center;
     border-bottom: #dbdbdb 1px solid;
     cursor: pointer;
   }
 
-  .list-options ul li:hover {
+  .list-options button {
+    width: 100%;
+    padding: 5px 20px;
+    text-align: left;
+  }
+
+  .list-options ul li:hover,
+  .list-options button:hover {
     background-color: #14b8a6;
     color: white;
+  }
+
+  .active-list button {
+    background-color: #14b8a6;
+    color: white;
+  }
+
+  .list-food button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .icon-checklist {
+    display: flex;
+    align-items: center;
   }
 </style>
